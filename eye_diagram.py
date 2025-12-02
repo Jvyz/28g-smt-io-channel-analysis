@@ -14,7 +14,7 @@ def run_eye_sim():
     # 1. Load Channel
     try:
         net = rf.Network(file_path)
-    except FileNotFoundError:
+    except Exception as e:
         print("File not found.")
         return
 
