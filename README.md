@@ -9,7 +9,7 @@ The core analysis focuses on comparing the insertion loss and return loss of **2
 
 ## Methodology
 
-The primary goal of this script is to assess the impact of host PCB trace length on signal integrity, specifically comparing the 4-inch host channel against the 10-inch host channel, which represents the longest supported electrical path.
+The primary goal of this script is to assess the impact of host PCB trace length on signal integrity, specifically comparing the 4-inch host channel against the 10-inch host channel, which represents the longest supported electrical path. Following graphs are generated using Python:
 
 ![Comparison of Step Response for 4-inch and 10-inch Host Channels](result/step_response.png)
 
