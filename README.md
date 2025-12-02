@@ -29,7 +29,7 @@ The Nyquist frequency for this analysis is **14 GHz** (based on 28 Gbaud signali
 
 ## Conclusion
 
-The analysis provided insight on IEEE standards on high-speed protocol signal integrity of 28Gb/s high density SMT IO, 4/10 inch host. Additioanlly, comprehensive measurements of mixed-mode S parameters were conducted and thus the performance were evaluated to better understand the standards of high-speed tranmission lines.
+The analysis provided insight on IEEE standards on high-speed protocol and signal integrity of 28Gb/s high density SMT IO, 4/10 inch host. Additioanlly, comprehensive measurements of mixed-mode S parameters were conducted and thus the performance were evaluated to better understand the standards of high-speed tranmission lines.
 
 ## Contribution
 If you find issues or have suggestions for additional plots (e.g., Time Domain Reflectometry/TDR), feel free to open an issue or submit a pull request.
