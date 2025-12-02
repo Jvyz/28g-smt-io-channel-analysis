@@ -14,6 +14,7 @@ for f in files:
     try:
 
         net = Network(f)
+        net.renormalize(50)
         net.se2gmm(p=2) # 4 ports singed ended to 4 ports mixed mode
         #Insertion Loss
         net.s21.plot_s_db(label=f"{f}: Sdd21 (Insertion Loss)")
