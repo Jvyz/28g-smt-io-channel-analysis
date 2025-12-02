@@ -14,12 +14,14 @@ for f in files:
     try:
 
         net = Network(f)
-        net.se2gmm(p=2) # 4 ports singed ended to 4 ports mixed mode
+        net.renumber(from_ports=[0, 2, 1, 3], to_ports=[0, 1, 2, 3])
+        net.se2gmm(p=2) # 4 ports singed ended to 2 ports differential
+        net.renormalize(100)
 
-        #Return Loss
+        #return Loss
         net.s11.plot_s_db(label=f"{f}: Sdd11 (Return Loss)", linestyle='--')
 
-        #@ Nyquist Frequency
+        #@ Nyquist frequency
         idx_14G = (np.abs(net.f - 14e9)).argmin()
         loss_14G = net.s11.s_db[idx_14G, 0, 0]
         print(f"{f}: Loss @14GHz = {loss_14G:.2f} dB")

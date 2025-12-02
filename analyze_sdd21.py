@@ -1,6 +1,5 @@
 import skrf as rf
 import matplotlib.pyplot as plt
-from skrf import Network
 import numpy as np
 
 files = [
@@ -12,25 +11,29 @@ plt.figure(figsize=(10, 6))
 
 for f in files:
     try:
-
-        net = Network(f)
-        net.renormalize(50)
-        net.se2gmm(p=2) # 4 ports singed ended to 4 ports mixed mode
-        #Insertion Loss
-        net.s21.plot_s_db(label=f"{f}: Sdd21 (Insertion Loss)")
-
-        #@ Nyquist Frequency
-        idx_14G = (np.abs(net.f - 14e9)).argmin()
-        loss_14G = net.s21.s_db[idx_14G, 0, 0]
-        print(f"{f}: Loss @14GHz = {loss_14G:.2f} dB")
+        net = rf.Network(f)
     except FileNotFoundError:
         print(f"Error: Could not find {f}")
+        continue
+
+    net.renumber(from_ports=[0, 2, 1, 3], to_ports=[0, 1, 2, 3])
+    net.se2gmm(p=2) # 4 ports singed ended to 4 ports mixed mode
+    net.renormalize(100)
+    
+    net.plot_s_db(m=1, n=0, label=f"{f} (Sdd21)")
+
+    freq_point = 14e9
+    idx = (np.abs(net.f - freq_point)).argmin()
+    loss = net.s_db[idx, 1, 0]
+    
+    print(f"{f}: Loss @ 14GHz = {loss:.2f} dB")
 
 plt.axvline(x=14e9, c='r', linestyle='--', label='Nyquist (14GHz)')
-plt.title("Differential S-Parameters: Insertion Loss (Sdd21)")
+plt.title("Differential Insertion Loss (Sdd21)")
 plt.xlabel("Frequency (GHz)")
 plt.ylabel("Magnitude (dB)")
-plt.grid(True, axis='both', linestyle=':', alpha=0.6)
+plt.ylim(-30, 2) # Zoom in to see the top clearly. 0dB is the max.
+plt.grid(True, which='both', linestyle=':', alpha=0.6)
 plt.legend()
 plt.tight_layout()
 plt.show()

@@ -7,35 +7,42 @@ files = {
     "10-inch": "TEC_SMT_IO_42GHz_Thru_B5B6_10in.s4p"
 }
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(12, 7))
 
 for label, f in files.items():
-    # Load and convert to Differential (Mixed Mode)
-    net = rf.Network(f)
-    net.renormalize(50)
+    try:
+        net = rf.Network(f)
+    except Exception as e:
+        print(f"Error Loading {f}: {e}")
+        continue
+    
+    #port reordering
+    net.renumber(from_ports=[0, 2, 1, 3], to_ports=[0, 1, 2, 3])
+
+    #mixed mode/differential conversion
     net.se2gmm(p=2)
+    net.renormalize(100) #doesn't change anything but I note it anyways
     
-    # Extract Sdd21 (Differential Thru)
-    # new 1-Port Network from just the Sdd21 data to use skrf's time tools
-    sdd21 = net.s[:, 1, 0]  
-    net_sdd21 = rf.Network(frequency=net.frequency, s=sdd21, z0=50)
+    #sdd21 calculation
+    sdd21 = net.s[:, 1, 0] 
     
-    # extrapolate at 0Hz
+    #convert to one port for skrf functions
+    net_sdd21 = rf.Network(frequency=net.frequency, s=sdd21)
+    
+    #extrapolation to DC
     net_dc = net_sdd21.extrapolate_to_dc(kind='linear', dc_sparam=1.0)
     
-    # 
+    #step responsee calculation
     t, step = net_dc.step_response(window='hamming', pad=2000)
-    
-    # normalization
-    step = step / np.max(step)
-    
-    #
-    plt.plot(t * 1e9, step, label=f"{label} Step Response", linewidth=2)
 
-plt.title("Channel Step Response (Corrected with DC & Windowing)")
+    #plot
+    plt.plot(t * 1e9, step, label=f"{label} Thru", linewidth=2)
+
+plt.title("Differential Step Response")
 plt.xlabel("Time (ns)")
 plt.ylabel("Voltage (Normalized)")
-plt.xlim(0, 2)
-plt.grid(True)
+plt.axhline(1.0, color='r', linestyle='--', alpha=0.3, label="Ideal Thru")
+plt.ylim(-0.1, 1.2)
 plt.legend()
+plt.grid(True)
 plt.show()
