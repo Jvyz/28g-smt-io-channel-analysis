@@ -11,47 +11,38 @@ num_bits = 3000    # More bits = smoother density
 samples_per_symbol = 32 # 32 is usually enough for visual check
 
 def run_eye_sim():
-    # 1. Load Channel
     try:
         net = rf.Network(file_path)
     except Exception as e:
         print("File not found.")
         return
 
-    # --- THE CRITICAL FIX (Port Swapping) ---
-    # Check if 1->2 (S21) is the main path. If so, swap for skrf.
-    if np.abs(net.s[0, 1, 0]) > np.abs(net.s[0, 2, 0]):
-        print("Detected Sequential Port Mapping (1->2). Swapping ports...")
-        net.renumber(from_ports=[0, 2, 1, 3], to_ports=[0, 1, 2, 3])
-    # ----------------------------------------
+    net.renumber(from_ports=[0, 2, 1, 3], to_ports=[0, 1, 2, 3])
 
     net.renormalize(50)
     net.se2gmm(p=2)
     
-    # 2. Extract Sdd21 (Differential Thru)
     sdd21 = net.s[:, 1, 0]
     
-    # 3. Use Skrf to get the Impulse Response (Safer than manual FFT)
-    # We create a 1-port network of just the Sdd21 data
+    #create a 1-port network of just the Sdd21 data
     net_sdd21 = rf.Network(frequency=net.frequency, s=sdd21, z0=100)
     
-    # Extrapolate to DC (Standard 1.0V start)
+    #extrapolate to DC
     net_dc = net_sdd21.extrapolate_to_dc(kind='linear', dc_sparam=1.0)
-    
-    # Get Impulse Response directly from skrf
-    # This automatically handles the frequency spacing and time axis
+
+    #automatically handles the frequency spacing and time axis
     t_impulse, impulse = net_dc.impulse_response(window='hamming', pad=2000)
 
-    # 4. Resample Impulse to match Simulation Rate
-    # We need strict timing for the convolution
+    #resample Impulse to match Simulation Rate
+    #we need strict timing for the convolution
     target_dt = UI / samples_per_symbol
     t_sim = np.arange(0, t_impulse[-1], target_dt)
     
     # Interpolate the impulse onto the new time grid
     impulse_interp = np.interp(t_sim, t_impulse, impulse)
     
-    # Normalize impulse energy so a steady '1' equals 1.0V
-    # The sum of the impulse response * dt roughly equals the DC gain (1.0)
+    #normalize impulse energy so a steady '1' equals 1.0V
+    #the sum of the impulse response * dt roughly equals the DC gain (1.0)
     current_area = np.sum(impulse_interp)
     impulse_interp = impulse_interp / current_area
 
@@ -77,7 +68,7 @@ def run_eye_sim():
         segment = rx_signal[i*fold_width : (i+1)*fold_width]
         plt.plot(t_axis, segment, color='lime', alpha=0.05, linewidth=1)
 
-    plt.title(f"28 Gbps Eye Diagram (10-inch Channel) - CORRECTED", color='white')
+    plt.title(f"28 Gbps Eye Diagram (10-inch Channel)", color='white')
     plt.xlabel("Time (UI)", color='white')
     plt.ylabel("Voltage (Normalized)", color='white')
     plt.xlim(0, 2)
