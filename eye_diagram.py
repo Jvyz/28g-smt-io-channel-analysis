@@ -68,7 +68,7 @@ def run_eye_sim():
         segment = rx_signal[i*fold_width : (i+1)*fold_width]
         plt.plot(t_axis, segment, color='lime', alpha=0.2, linewidth=1)
 
-    plt.title(f"28 Gbps Eye Diagram (10-inch Channel)", color='white')
+    plt.title(f"28 Gbps Eye Diagram (4-inch Channel)", color='white')
     plt.xlabel("Time (UI)", color='white')
     plt.ylabel("Voltage (Normalized)", color='white')
     plt.xlim(0, 2)
