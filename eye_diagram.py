@@ -4,7 +4,7 @@ import numpy as np
 from scipy.signal import convolve
 
 # --- CONFIGURATION ---
-file_path = "TEC_SMT_IO_42GHz_Thru_B5B6_10in.s4p" 
+file_path = "TEC_SMT_IO_42GHz_Thru_B5B6_4in.s4p" 
 data_rate = 28e9   # 28 Gbps NRZ
 UI = 1 / data_rate # ~35.7 ps
 num_bits = 3000    # More bits = smoother density
@@ -13,7 +13,7 @@ samples_per_symbol = 32 # 32 is usually enough for visual check
 def run_eye_sim():
     try:
         net = rf.Network(file_path)
-    except Exception as e:
+    except Exception:
         print("File not found.")
         return
 
@@ -66,7 +66,7 @@ def run_eye_sim():
     # Plot traces
     for i in range(10, min(1000, num_traces)):
         segment = rx_signal[i*fold_width : (i+1)*fold_width]
-        plt.plot(t_axis, segment, color='lime', alpha=0.05, linewidth=1)
+        plt.plot(t_axis, segment, color='lime', alpha=0.2, linewidth=1)
 
     plt.title(f"28 Gbps Eye Diagram (10-inch Channel)", color='white')
     plt.xlabel("Time (UI)", color='white')

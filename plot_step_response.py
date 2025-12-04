@@ -16,7 +16,7 @@ for label, f in files.items():
         print(f"Error Loading {f}: {e}")
         continue
     
-    #port reordering
+    #port reordering 
     net.renumber(from_ports=[0, 2, 1, 3], to_ports=[0, 1, 2, 3])
 
     #mixed mode/differential conversion
