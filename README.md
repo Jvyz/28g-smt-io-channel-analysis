@@ -13,7 +13,7 @@ The primary goal of this script is to assess the impact of host PCB trace length
 
 ![Eye Diagram of 10-inch Host Channels](result/eye_diagram_10.png)
 
-![Eye Diagram of 4-inch Host Channels](result/eye_diagram_10.png)
+![Eye Diagram of 4-inch Host Channels](result/eye_diagram_4.png)
 
 ![Comparison of Step Response for 4-inch and 10-inch Host Channels](result/step_response.png)
 
